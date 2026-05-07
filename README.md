@@ -1,6 +1,6 @@
-# YSYX-miniEMU
+# miniEMU
 
-这是一生一芯 v24.07 E6 阶段的 miniEMU 实现
+这是一生一芯 v24.07 E4 阶段的 miniEMU 实现
 
 ## 目录结构
 
@@ -28,6 +28,12 @@ tar -xvf logisim-bin.tar.bz2 && rm logisim-bin.tar.bz2
 cd logisim-bin
 tail -n +2 sum.hex | sed -e 's/.*: //' -e 's/ /\n/g' | sed -e 's/\(..\)\(..\)\(..\)\(..\)/\4 \3 \2 \1/' | xxd -r -p > sum.bin
 tail -n +2 mem.hex | sed -e 's/.*: //' -e 's/ /\n/g' | sed -e 's/\(..\)\(..\)\(..\)\(..\)/\4 \3 \2 \1/' | xxd -r -p > mem.bin
+```
+
+获取`valgrind`:
+
+```bash
+sudo apt install valgrind
 ```
 
 最后在项目根目录运行编译：  
