@@ -1,0 +1,27 @@
+# Build outputs
+/build/
+/bin/
+*.o
+*.so
+*.a
+*.dSYM/
+*.gcda
+*.gcno
+*.gcov
+
+# Test executables and logs
+/tests/*_tests
+/tests/tests.log
+test.c
+test
+
+# Generated tool files
+/compile_commands.json
+/.cache/
+
+# Downloaded/generated test assets
+/logisim-bin/
+/logisim-bin.tar.bz2
+
+# Local editor/project files
+/.nvim.lua
