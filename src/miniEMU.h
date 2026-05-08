@@ -13,6 +13,7 @@ extern XLEN PC;
 
 // RV32E has 16 rigisters, and the rigisters x0 is hardwired with bits equal to 0
 extern XLEN R[16];
+extern int terminate;
 
 extern uint8_t M[MEM_SIZE];
 

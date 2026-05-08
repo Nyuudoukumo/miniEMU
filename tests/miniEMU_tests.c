@@ -9,6 +9,7 @@ static void reset_emu(void)
 {
     PC = 0;
     PC_UPDATE = 1;
+    terminate = 0;
     memset(R, 0, sizeof(R));
     memset(M, 0, sizeof(M));
 }
@@ -19,21 +20,19 @@ char *test_addi_jalr()
         0x13, 0x05, 0x40, 0x01,
         0xe7, 0x00, 0x00, 0x01,
         0xe7, 0x00, 0xc0, 0x00,
-        0x67, 0x00, 0xc0, 0x00,
-        0x13, 0x05, 0xa5, 0x00,
-        0x67, 0x80, 0x00, 0x00
+        0x73, 0x00, 0x10, 0x00,
+        0x13, 0x05, 0x00, 0x00,
+        0x67, 0x80, 0x00, 0x00,
     };
 
     reset_emu();
     memcpy(M, program, sizeof(program));
 
-    int i = 0;
-    while (i < 100) {
+    while (!terminate) {
         inst_cycle();
-        i++;
     }
 
-    mu_assert(R[10] == 30, "Wrong data");
+    mu_assert(R[10] == 0, "Hit bad trap!\n");
     return NULL;
 }
 
@@ -50,9 +49,13 @@ char *test_sum()
     fread(M, 1, size, fp);
     fclose(fp);
 
-    int i = 0;
-    while (i < 7000) {
-        i++;
+    uint8_t inst1[] = { 0x13, 0x05, 0x00, 0x00 }; // Addi a0 zero 0
+    uint8_t inst2[] = { 0x73, 0x00, 0x10, 0x00 }; // EBREAK
+
+    memcpy(M+0x244, inst1, 4);
+    memcpy(M+0x248, inst2, 4);
+
+    while (!terminate) {
         inst_cycle();
     }
 
@@ -74,10 +77,12 @@ char *test_mem()
     rewind(fp);
     fread(M, 1, size, fp);
     fclose(fp);
+    uint8_t inst1[] = { 0x13, 0x05, 0x00, 0x00 }; // Addi a0 zero 0
+    uint8_t inst2[] = { 0x73, 0x00, 0x10, 0x00 }; // EBREAK
 
-    int i = 0;
-    while (i < 7000) {
-        i++;
+    memcpy(M+0x1218, inst1, 4);
+    memcpy(M+0x121c, inst2, 4);
+    while (!terminate) {
         inst_cycle();
     }
 

@@ -5,6 +5,7 @@
 #include "dbg.h"
 
 XLEN PC = 0;
+int terminate = 0;
 
 // RV32E has 16 rigisters, and the rigisters x0 is hardwired with bits equal to 0
 XLEN R[16] = {0};
@@ -31,6 +32,7 @@ decoded_inst_t decode(XLEN inst)
         case 0b0010011: // OP_IMM
         case 0b1100111: // JALR
         case 0b0000011: // LOAD
+        case 0b1110011: // SYSTEM
         {
             decInst.format = I_TYPE;
             decInst.rd = (inst >> 7) & 0x1F;
@@ -142,36 +144,50 @@ static void LUI(decoded_inst_t decInst)
     write_reg(decInst.rd, decInst.imm);
 }
 
+static void EBREAK(decoded_inst_t decInst)
+{
+    uint32_t state = R(10);
+    terminate = 1;
+    if(state == 0) {
+        printf("HIT GOOD TRAP!\n");
+    } else {
+        printf("HIT BAD TRAP");
+    }
+    return;
+}
+
 static void ex_I(decoded_inst_t decInst)
 {
-    if(decInst.opcode == 0b0010011){ // OP_IMM
-        switch(decInst.funct3) {
-            case 0x0: // ADDI
+    switch(decInst.opcode) {
+        case 0b0010011: // OP_IMM
+            if(decInst.funct3 == 0x0) // ADD
                 ADDI(decInst);
-                break;
-            default:
+            else
                 sentinel("Error instruction!\n");
-        }
-    } else if(decInst.opcode == 0b1100111) {
-        if(decInst.funct3 == 0x0) {
-            // JALR
-            JALR(decInst);
-        } else {
-            sentinel("Error instruction!\n");
-        }
-    } else if(decInst.opcode == 0b0000011) {
-        switch(decInst.funct3) {
-            case 0x2: // lw
+            break;
+        case 0b1100111:
+            if(decInst.funct3 == 0x0) // JALR
+                JALR(decInst);
+            else
+                sentinel("Error instruction!\n");
+            break;
+        case 0b0000011:
+            if (decInst.funct3 == 0x2)
                 LW(decInst);
-                break;
-            case 0x4: // lbu
+            else if(decInst.funct3 == 0x4)
                 LBU(decInst);
-                break;
-            default:
-                sentinel("Error instruction!\n");
-        }
-    } else {
-        sentinel("Error opcode!\n");
+            else
+                sentinel("Error instruction\n!");
+            break;
+        case 0b1110011:
+            if (decInst.funct3 == 0x0 && decInst.imm == 0x1)
+                EBREAK(decInst);
+            else
+                sentinel("Error instruction\n!");
+            break;
+        default:
+            sentinel("Error opcode!\n");
+
     }
     return;
 error:
