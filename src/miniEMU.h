@@ -16,7 +16,7 @@ extern XLEN R[16];
 extern int terminate;
 
 extern uint8_t M[MEM_SIZE];
-
+extern uint8_t screen[256*256*4];
 
 extern uint8_t PC_UPDATE;
 

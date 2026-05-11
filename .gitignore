@@ -1,6 +1,7 @@
 # Build outputs
 /build/
 /bin/
+/src/build/
 *.o
 *.so
 *.a
@@ -17,6 +18,7 @@ test
 
 # Generated tool files
 /compile_commands.json
+src/compile_commands.json
 /.cache/
 
 # Downloaded/generated test assets

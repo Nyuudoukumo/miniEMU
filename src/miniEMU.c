@@ -19,6 +19,8 @@ uint8_t M[MEM_SIZE] = {
     0x67,0x80,0x00,0x00
 };
 
+uint8_t screen[256*256*4] = {};
+
 uint8_t PC_UPDATE = 1;
 
 decoded_inst_t decode(XLEN inst)
@@ -122,10 +124,18 @@ static void LBU(decoded_inst_t decInst)
 static void SW(decoded_inst_t decInst)
 {
     uint32_t addr = decInst.imm + R(decInst.rs1);
-    M[addr] = R(decInst.rs2) & 0xFF;
-    M[addr + 1] = (R(decInst.rs2) >> 8) & 0xFF;
-    M[addr + 2] = (R(decInst.rs2) >> 16) & 0xFF;
-    M[addr + 3] = (R(decInst.rs2) >> 24) & 0xFF;
+    if(addr >= 0x20000000 && addr < 0x20040000) {
+        uint32_t saddr = addr & 0xFFFFF;
+        screen[saddr] = R(decInst.rs2) & 0xFF;
+        screen[saddr + 1] = (R(decInst.rs2) >> 8) & 0xFF;
+        screen[saddr + 2] = (R(decInst.rs2) >> 16) & 0xFF;
+        screen[saddr + 3] = (R(decInst.rs2) >> 24) & 0xFF;
+    } else {
+        M[addr] = R(decInst.rs2) & 0xFF;
+        M[addr + 1] = (R(decInst.rs2) >> 8) & 0xFF;
+        M[addr + 2] = (R(decInst.rs2) >> 16) & 0xFF;
+        M[addr + 3] = (R(decInst.rs2) >> 24) & 0xFF;
+    }
 }
 
 static void SB(decoded_inst_t decInst)
