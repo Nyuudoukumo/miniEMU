@@ -10,7 +10,7 @@
 
 ## 项目运行
 
-首先根据[ysyx-E3]配置系统环节，然后获取测试所需的文件:  
+首先根据[ysyx-E3](https://ysyx.oscc.cc/docs/2407/e/3.html)配置系统环节，然后获取测试所需的文件:  
 
 ```bash
 wget https://ysyx.oscc.cc/slides/resources/archive/logisim-bin.tar.bz2
